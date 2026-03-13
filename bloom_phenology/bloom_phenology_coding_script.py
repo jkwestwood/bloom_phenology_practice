@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import netCDF4 as nc
 
-
 def chla_time_series_grid_cell(chla_data, lat_idx, lon_idx, year):
     """
     Extracts the chlorophyll-a concentration time series for a specified grid cell and year.
