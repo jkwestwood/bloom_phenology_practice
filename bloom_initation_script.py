@@ -18,7 +18,7 @@ year = 2018
 time_var = nc.variables['time'][:]
 time_units = nc.variables['time'].units
 
-#create the datse from the time variable and units
+#create the datset from the time variable and units
 dates = netCDF4.num2date(time_var, time_units)
 years = np.array([d.year for d in dates])
 
