@@ -93,7 +93,7 @@ def save_bloom_maximum_to_csv(chla_data, year, filepath_out):
 
 #testing block
 if __name__ == "__main__":
-    filepath  = "chl_8day_1999_2018_Julia.nc"
+    filepath  = "chl_8day_1999_2018_cleaned.nc"
     chla_data = nc.Dataset(filepath)
 
     year = 2018

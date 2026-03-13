@@ -52,6 +52,6 @@ def create_chla_maximum_maps(chla_data, year):
     plt.show()
 
 if __name__ == "__main__":
-    chla_data = nc.Dataset('chl_8day_1999_2018_Julia.nc')
-    year = 2018
+    chla_data = nc.Dataset('chl_8day_1999_2018_cleaned.nc')
+    year = 2001
     create_chla_maximum_maps(chla_data, year)

@@ -97,12 +97,12 @@ def find_grid_maximum(chla_data, lat_idx, lon_idx, year):
 #testing block 
 if __name__ == "__main__":
     #load the dataset
-    filepath  = "chl_8day_1999_2018_Julia.nc"
+    filepath  = "chl_8day_1999_2018_cleaned.nc"
     chla_data = nc.Dataset(filepath)
 
-    lat_idx = 10
-    lon_idx = 10
-    year    = 2016
+    lat_idx = 21
+    lon_idx = 40
+    year    = 2000
 
     plot_chla_time_series_grid_cell(chla_data=chla_data, lat_idx=lat_idx, lon_idx=lon_idx, year=year)
 
