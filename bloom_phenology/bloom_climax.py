@@ -8,7 +8,8 @@ from bloom_phenology_coding_script import chla_time_series_grid_cell
 
 def calculate_bloom_climax(chla_data, year):
     """
-    Calculates the bloom climax (peak chlorophyll-a concentration) for each grid cell in the dataset for a specified year.
+    Calculates the bloom climax (peak chlorophyll-a concentration) for each grid cell in the dataset for a specified year, loops
+    through each grid cell and calculates the climax by the change in chla over change in time.
 
     Parameters:
     chla_data: The netCDF dataset containing chlorophyll-a data.
@@ -17,38 +18,56 @@ def calculate_bloom_climax(chla_data, year):
     Returns:
     bloom_climax (2D array): A 2D array containing the bloom climax (peak chlorophyll-a concentration) for each grid cell in the dataset for the specified year.
     """
-    # load all variables once outside the loop
-    lat        = chla_data.variables['latitude'][:]
-    lon        = chla_data.variables['longitude'][:]
-    time       = chla_data.variables['time']
-    chla       = chla_data.variables['chla'][:]
+    #load all variables into the function 
+    lat = chla_data.variables['latitude'][:]
+    lon = chla_data.variables['longitude'][:]
+    chla = chla_data.variables['chla'][:]
+    time = chla_data.variables['time']
 
-    # convert time once outside the loop
+    #convert time to datetime objects
     time_dates = nc.num2date(time[:], units=time.units, calendar=getattr(time, 'calendar', 'standard'))
-    time_dates = np.array([datetime(d.year, d.month, d.day) for d in time_dates])
+    time_dates = np.array([datetime(d.year, d.month, d.day) for d in time_dates])  #d is the interator                         )   
 
-    # filter to the requested year once outside the loop
-    year_mask  = np.array([d.year == year for d in time_dates])
-    chla_year  = chla[year_mask, :, :]    # shape: (n_timesteps_in_year, n_lat, n_lon)
+    #run the analysis for each year-- extract each year
+    year_mask = np.array([d.year == year for d in time_dates])
+    chla_year = chla[year_mask, :, :] #extracts the chla data for each grid cell :,:... the specified year using the year_mask to index the time dimension of the chla array.
+    time_year = time_dates[year_mask]
 
-    # pre-allocate output array shaped (n_lat, n_lon)
-    bloom_climax = np.full((len(lat), len(lon)), np.nan)
+    #create an empty array to store the bloom climax values for each grid cell
+    n_lat = len(lat)
+    n_lon = len(lon)
+    bloom_climax = np.full((n_lat,n_lon), np.nan)
 
-    for lat_idx in range(len(lat)):
-        for lon_idx in range(len(lon)):
-            chla_cell = chla_year[:, lat_idx, lon_idx]
+    #loop through reach grid cell 
 
-            # skip grid cells that are entirely NaN
-            if np.all(np.isnan(chla_cell)):
-                continue
-            # store the peak chla value for this grid cell
-            bloom_climax[lat_idx, lon_idx] = np.nanmax(chla_cell)
+    for i in range(n_lat): 
+        for j in range(n_lon): 
 
+           chla_cell = chla_year[:, i, j] #extracts the chlorophyll-a concentration time series for the current grid cell (i, j) across all time steps in the specified year.
+           max_rate = -np.inf #initialize the maximum rate of change to negative infinity to ensure any valid rate will be higher.
+           climax_index = 0 #initialize the index of the bloom climax to 0
+
+           for k in range(len(time_year)-1): #loop through the time steps for the current grid cell, stopping one step before the end to avoid index out of range errors when calculating the rate of change.
+             
+             #calculate change in chla between each timestep 
+             dchla = chla_cell[k+1] - chla_cell[k] #calculates the change in chlorophyll-a concentration between consecutive time steps k and k+1 for the current grid cell.
+             dt = (time_year[k+1] - time_year[k]).days
+
+             #calculate the rate of change 
+             rate = dchla/dt
+
+             #check to see if rate is higher that the previous rate 
+
+             if rate > max_rate:
+                max_rate = rate #if the current rate of change is greater than the previously recorded maximum rate, update max_rate to the current rate.
+                climax_index = k+1 #update the index of the bloom climax to the current time step k+1, which corresponds to the time step where the maximum rate of change occurs.  
+
+            # store the chla value at the climax timestep for this grid cell
+                bloom_climax[i, j] = chla_cell[climax_index]
 
     return bloom_climax
-
 if __name__ == "__main__":
     chla_data = nc.Dataset('chl_8day_1999_2018_cleaned.nc')
     year = 2001
     bloom_climax = calculate_bloom_climax(chla_data, year)
-    print(bloom_climax)
+    print(f"bloom climax for {year}: {bloom_climax}")
