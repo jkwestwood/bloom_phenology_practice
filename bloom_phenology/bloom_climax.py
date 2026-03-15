@@ -1,5 +1,4 @@
 #calculating the bloom climax 
-
 #importing necessary libraries
 from datetime import datetime
 import numpy as np
