@@ -38,7 +38,7 @@ def calculate_bloom_climax(chla_data, year):
     n_lon = len(lon)
     bloom_climax = np.full((n_lat,n_lon), np.nan)
 
-    #loop through reach grid cell 
+    #loop through each grid cell 
 
     for i in range(n_lat): 
         for j in range(n_lon): 
@@ -66,6 +66,9 @@ def calculate_bloom_climax(chla_data, year):
                 bloom_climax[i, j] = chla_cell[climax_index]
 
     return bloom_climax
+
+
+
 if __name__ == "__main__":
     chla_data = nc.Dataset('chl_8day_1999_2018_cleaned.nc')
     year = 2001
