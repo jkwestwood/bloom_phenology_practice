@@ -1,7 +1,5 @@
 #clean the .nc files 
 #working in the Uk where data is very cloudy and if there are not enough data values to get 
-
-import xarray as xr
 import numpy as np
 import netCDF4 as nc
 
@@ -15,7 +13,6 @@ def clean_nc_chla_file(chla_data):
     Outputs:
     valid_mask (2D boolean array): True = valid grid cell (less than 50% missing)
     """
-
     #extract chla data 
     chla = chla_data.variables['chla'][:]
 
@@ -36,7 +33,7 @@ def save_clean_chla_to_nc(chla_data, filepath_out):
     filepath_out (str): The path to the output netCDF file.
     """
     # clean the data
-    valid_mask, chla_clean = clean_nc_chla_file(chla_data)
+    mask_data, chla_clean = clean_nc_chla_file(chla_data)
 
     # extract original variables
     lat  = chla_data.variables['latitude'][:]
