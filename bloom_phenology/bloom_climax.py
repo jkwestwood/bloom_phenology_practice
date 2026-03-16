@@ -38,7 +38,6 @@ def calculate_bloom_climax(chla_data, year):
     bloom_climax = np.full((n_lat,n_lon), np.nan)
 
     #loop through each grid cell 
-
     for i in range(n_lat): 
         for j in range(n_lon): 
 
@@ -65,7 +64,6 @@ def calculate_bloom_climax(chla_data, year):
                 bloom_climax[i, j] = chla_cell[climax_index]
 
     return bloom_climax
-
 
 
 if __name__ == "__main__":

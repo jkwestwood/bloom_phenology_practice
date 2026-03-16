@@ -1,15 +1,14 @@
 #chla-max time series for each year 
-
 #import necessary libraries 
 import pandas as pd 
 import matplotlib.pyplot as plt
-import netCDF4 as nc
-from bloom_maximum import find_chla_maximum
 
 def plot_bloom_maximum_trends(date, max_chla): 
     '''Plots the bloom maximum trend for each grid cell in one year
     
     Parameters: 
+    date: the dates from the inputted csv file 
+    max_chla = extracted max_chla for each day from the csv file 
 
     imports a previous function from bloom_maximum.py to extract the bloom maximum date for each grid cell in the dataset for the specified year
     
@@ -17,16 +16,16 @@ def plot_bloom_maximum_trends(date, max_chla):
 
     '''
 
-    plt.plot(date, max_chla)
+    plt.plot(date, max_chla, color = 'g', linewidth = 2.0)
     plt.xlabel('Date')
     plt.ylabel('Bloom Maximum Chlorophyll-a Concentration (mg/m³)')
-    plt.title('Bloom Maximum Trend for Each Grid Cell in 1999')
+    plt.title('Bloom Maximum Trend for Each Grid Cell in 2013')
     plt.show()
 
   
    
 if __name__ == "__main__":
-    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_1999.csv"
+    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_2013.csv"
     chla_data = pd.read_csv(filepath)
 
     # convert date column to datetime, invalid/missing dates become NaT
@@ -45,5 +44,4 @@ if __name__ == "__main__":
 
     plot_bloom_maximum_trends(daily_max['date'], daily_max['max_chla'])
 
-    plt.savefig('bloom_maximum_plot_1999')
     

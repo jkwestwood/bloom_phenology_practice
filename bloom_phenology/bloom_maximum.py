@@ -96,7 +96,7 @@ if __name__ == "__main__":
     filepath  = "chl_8day_1999_2018_cleaned.nc"
     chla_data = nc.Dataset(filepath)
 
-    year = 2017
+    year = 2013
 
     bloom_dates, bloom_chla = find_chla_maximum (chla_data, year)
     df = save_bloom_maximum_to_csv(chla_data=chla_data, year=year, filepath_out=f"bloom_maximum_{year}.csv")
