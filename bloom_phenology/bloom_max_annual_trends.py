@@ -13,19 +13,27 @@ def plot_bloom_maximum_trends(date, max_chla):
     imports a previous function from bloom_maximum.py to extract the bloom maximum date for each grid cell in the dataset for the specified year
     
     outputs: plot showing the yearly trend 
-
     '''
 
     plt.plot(date, max_chla, color = 'g', linewidth = 2.0)
     plt.xlabel('Date')
     plt.ylabel('Bloom Maximum Chlorophyll-a Concentration (mg/m³)')
-    plt.title('Bloom Maximum Trend for Each Grid Cell in 2013')
+    plt.title('Bloom Maximum Trend for Each Grid Cell in 2018')
+    plt.show()
+
+def scatter_plot_chla(date, chla):
+    '''creates a dot plot to see maximum and minimum values for chla for each year'''
+
+    plt.scatter(date, chla, color = 'lightgreen')
+    plt.xlabel('Date')
+    plt.ylabel('Bloom Maximum Chlorophyll-a Concentration (mg/m³)')
+    plt.title('Bloom Maximum Trend for Each Grid Cell in 2018')
     plt.show()
 
   
    
 if __name__ == "__main__":
-    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_2013.csv"
+    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_2018.csv"
     chla_data = pd.read_csv(filepath)
 
     # convert date column to datetime, invalid/missing dates become NaT
@@ -43,5 +51,13 @@ if __name__ == "__main__":
     print(daily_max.head())
 
     plot_bloom_maximum_trends(daily_max['date'], daily_max['max_chla'])
+
+    #scatter plot 
+
+    lat = chla_data['latitude']
+    chla = chla_data['max_chla']
+    date = chla_data['date']
+
+    scatter_plot_chla(date, chla)
 
     
