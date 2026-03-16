@@ -18,7 +18,7 @@ def plot_bloom_maximum_trends(date, max_chla):
     plt.plot(date, max_chla, color = 'g', linewidth = 2.0)
     plt.xlabel('Date')
     plt.ylabel('Bloom Maximum Chlorophyll-a Concentration (mg/m³)')
-    plt.title('Bloom Maximum Trend for Each Grid Cell in 2018')
+    plt.title('Bloom Maximum Trend for Each Grid Cell in 2000')
     plt.show()
 
 def scatter_plot_chla(date, chla):
@@ -33,7 +33,7 @@ def scatter_plot_chla(date, chla):
   
    
 if __name__ == "__main__":
-    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_2018.csv"
+    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_2000.csv"
     chla_data = pd.read_csv(filepath)
 
     # convert date column to datetime, invalid/missing dates become NaT
