@@ -100,8 +100,8 @@ if __name__ == "__main__":
     filepath  = "chl_8day_1999_2018_cleaned.nc"
     chla_data = nc.Dataset(filepath)
 
-    lat_idx = 21
-    lon_idx = 40
+    lat_idx = 19
+    lon_idx = 38
     year    = 2000
 
     plot_chla_time_series_grid_cell(chla_data=chla_data, lat_idx=lat_idx, lon_idx=lon_idx, year=year)

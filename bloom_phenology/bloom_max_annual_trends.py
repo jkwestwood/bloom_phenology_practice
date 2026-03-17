@@ -33,7 +33,7 @@ def scatter_plot_chla(date, chla):
   
    
 if __name__ == "__main__":
-    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_2000.csv"
+    filepath  = r"C:\Users\julia\Desktop\Dissertation\bloom_maximum_csv\bloom_maximum_1999.csv"
     chla_data = pd.read_csv(filepath)
 
     # convert date column to datetime, invalid/missing dates become NaT
