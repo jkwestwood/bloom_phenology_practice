@@ -19,7 +19,7 @@ def clean_nc_chla_file(chla_data):
     # count NaNs per cell, divide by total timesteps, keep under 50%
     mask_data = (np.sum(np.isnan(chla), axis=0) / chla.shape[0]) < 0.5 
 
-    chla[:, ~mask_data] = np.nan #only selects the grid cells that are valid and sets the rest to NaN
+    chla[:, mask_data] = np.nan #only selects the grid cells that are valid and sets the rest to NaN
 
     return mask_data, chla
 
