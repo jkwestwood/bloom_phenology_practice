@@ -19,11 +19,10 @@ def clean_nc_chla_file(chla_data):
     # count NaNs per cell, divide by total timesteps, keep under 50%
     mask_data = (np.sum(np.isnan(chla), axis=0) / chla.shape[0]) < 0.5 
 
-    chla[:, mask_data] = np.nan #only selects the grid cells that are valid and sets the rest to NaN
+    chla[:, ~mask_data] = np.nan #only selects the grid cells that are valid and sets the rest to NaN
 
     return mask_data, chla
 
-    
 def save_clean_chla_to_nc(chla_data, filepath_out):
     """
     Saves the cleaned chlorophyll-a dataset to a new netCDF file.
@@ -72,7 +71,7 @@ if __name__ == "__main__":
     filepath  = "chl_8day_1999_2018_Julia.nc"
     chla_data = nc.Dataset(filepath)
 
-    save_clean_chla_to_nc(chla_data, filepath_out="chl_8day_1999_2018_cleaned.nc")
+    save_clean_chla_to_nc(chla_data, filepath_out="chl_8day_cleaned.nc")
 
     chla_data.close()
 
