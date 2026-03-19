@@ -1,5 +1,4 @@
 #created by Julia on 17/06/2024``
-
 #code that imports previous functions and extracts information for bloom maximum date for each year 
 #for all grid cells 
 
@@ -32,8 +31,7 @@ def find_chla_maximum(data, year):
     bloom_max_dates = np.full((len(lat), len(lon)),None, dtype = object)
     bloom_max_chla = np.full((len(lat), len(lon)), np.nan)
 
-    #create a nested loop to loop throiugh the range of all lat and lon cells 
-
+    #create a nested loop to loop through the range of all lat and lon cells 
     for lat_idx in range(len(lat)):
         for lon_idx in range(len(lon)):
             bloom_date, bloom_chla = chla_time_series_grid_cell(data, lat_idx, lon_idx, year)
@@ -96,7 +94,7 @@ if __name__ == "__main__":
     filepath  = "chl_8day_1999_2018_cleaned.nc"
     chla_data = nc.Dataset(filepath)
 
-    year = 2013
+    year = 1999
 
     bloom_dates, bloom_chla = find_chla_maximum (chla_data, year)
     df = save_bloom_maximum_to_csv(chla_data=chla_data, year=year, filepath_out=f"bloom_maximum_{year}.csv")
