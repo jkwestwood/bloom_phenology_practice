@@ -9,6 +9,8 @@ import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 import numpy as np
 
+#calculations
+
 def calculate_std_annual_maximum(chla_data, years):
     """
     Calculates the standard deviation of the annual maximum chlorophyll-a 
@@ -58,7 +60,46 @@ def calculate_std_annual_maximum(chla_data, years):
 
     return std_grid
 
-def map_stdev_grid(std_grid, lat, lon):
+def avg_annual_max(chla_data, years): 
+    '''Calculate the average of the annual maximum of all the grid cells '''
+    lat = chla_data.variables['latitude'][:]
+    lon = chla_data.variables['longitude'][:]
+
+    # create a 3D array to store the annual maximum chla for each year and grid cell
+    all_years_max = np.full((len(years), len(lat), len(lon)), np.nan)
+
+    for year_idx, year in enumerate(years):
+        # use existing function 'find_chla_maximum' to get the bloom max chla for a given year
+        bloom_max_dates, bloom_max_chla = find_chla_maximum(chla_data, year)
+
+        # store the annual maximum chla for this year
+        all_years_max[year_idx, :, :] = bloom_max_chla
+
+        print(f"Loaded year {year}")
+
+    # count how many years have a valid (non-NaN) value for each grid cell
+    valid_count = np.sum(~np.isnan(all_years_max), axis=0)
+
+    # calculate stdev but suppress the warning since we are handling it ourselves
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        annual_avg = np.average(all_years_max, axis=0)
+
+    # set cells with fewer than 2 valid years to NaN, because not enough strong data values
+    annual_avg[valid_count < 2] = np.nan
+
+    # print a summary to check the values look sensible
+    print(f"annual_avg shape       : {annual_avg.shape}")
+    print(f"Min annual_avg value        : {np.nanmin(annual_avg):.4f}")
+    print(f"Max annual_avg value        : {np.nanmax(annual_avg):.4f}")
+    print(f"Number of NaN cells  : {np.sum(np.isnan(annual_avg))}")
+    print(f"Number of valid cells: {np.sum(~np.isnan(annual_avg))}")
+
+    return annual_avg
+
+#Maps
+
+# def map_stdev_grid(std_grid, lat, lon):
     """
     Plots the standard deviation of the annual maximum chlorophyll-a
     concentration for each grid cell on a map.
@@ -99,20 +140,29 @@ def map_stdev_grid(std_grid, lat, lon):
     print("Plot saved and displayed")
 
 
+def map_max_avg(lat, lon, data): 
+    '''
+    Plots the maximum annual average chlorophyll-a
+    concentration for each grid cell on a map.
+
+    Parameters:
+    std_grid  : 2D array of annual avg (n_lat, n_lon)
+    lat       : 1D array of latitude values
+    lon       : 1D array of longitude values '''
+
+
 if __name__ == "__main__":
     filepath  = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
     chla_data = nc.Dataset(filepath)
 
-    # extract lat and lon BEFORE closing the dataset
     lat = chla_data.variables['latitude'][:]
     lon = chla_data.variables['longitude'][:]
 
     years = list(range(1999, 2019))
-    print("\nRunning full standard deviation calculation across all years...")
-    std_grid = calculate_std_annual_maximum(chla_data, years)
 
-    # close the dataset BEFORE plotting since we already have lat, lon and std_grid
+    print("\nRunning full average calculation across all years...")
+    annual_avg = avg_annual_max(chla_data, years)  # save the result to a variable
+
     chla_data.close()
 
-    # pass lat and lon directly instead of the dataset
-    map_stdev_grid(std_grid, lat, lon)
+    #map_max_avg(lat, lon, annual_avg)  # pass it to the map function
