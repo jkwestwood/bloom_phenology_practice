@@ -214,13 +214,86 @@ def plot_avg_distribution(annual_avg):
     plt.show()
     print("Plot saved and displayed")
 
+def map_stdev_grid(std_grid, lat, lon):
+    """
+    Plots the standard deviation of the annual maximum chlorophyll-a
+    concentration for each grid cell on a map.
+
+    Parameters:
+    std_grid  : 2D array of standard deviation values (n_lat, n_lon)
+    lat       : 1D array of latitude values
+    lon       : 1D array of longitude values
+    """
+
+    # create a meshgrid so every grid cell has a lat and lon coordinate
+    lon_grid, lat_grid = np.meshgrid(lon, lat)
+
+    # set up the map with a standard plate carree projection
+    fig, ax = plt.subplots(figsize=(12, 8),
+                           subplot_kw={'projection': ccrs.PlateCarree()})
+
+    # add coastlines and land features
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+    ax.add_feature(cfeature.LAND, facecolor='lightgrey')
+    ax.add_feature(cfeature.BORDERS, linewidth=0.5)
+    ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
+
+    # plot the standard deviation grid on the map
+    plot = ax.pcolormesh(lon_grid, lat_grid, std_grid,
+                         cmap='coolwarm',
+                         transform=ccrs.PlateCarree())
+
+    # add a colourbar
+    cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
+    cbar.set_label('Standard Deviation of Annual Maximum Chla (mg/m³)', fontsize=11)
+
+    ax.set_title('Standard Deviation of Annual Maximum Chlorophyll-a\nAcross All Grid Cells',
+                 fontsize=13)
+    plt.tight_layout()
+    plt.savefig(r"C:\Users\julia\Desktop\Dissertation\stdev_map.png", dpi=150, bbox_inches='tight')  # save to file
+    plt.show(block=True)
+    print("Plot saved and displayed")
+
+def map_max_avg(lat, lon, data):
+    '''
+    Plots the mean annual maximum chlorophyll-a
+    concentration for each grid cell on a map.
+
+    Parameters:
+    lat  : 1D array of latitude values
+    lon  : 1D array of longitude values
+    data : 2D array of annual average values (n_lat, n_lon)
+    '''
+
+    lon_grid, lat_grid = np.meshgrid(lon, lat)
+
+    fig, ax = plt.subplots(figsize=(12, 8),
+                           subplot_kw={'projection': ccrs.PlateCarree()})
+
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+    ax.add_feature(cfeature.LAND, facecolor='lightgrey')
+    ax.add_feature(cfeature.BORDERS, linewidth=0.5)
+    ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
+
+    plot = ax.pcolormesh(lon_grid, lat_grid, data,
+                         cmap='coolwarm',
+                         transform=ccrs.PlateCarree())
+
+    cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
+    cbar.set_label('Mean Annual Maximum Chla (mg/m³)', fontsize=11)
+
+    ax.set_title('Mean Annual Maximum Chlorophyll-a Across All Grid Cells', fontsize=13)
+
+    plt.tight_layout()
+    plt.savefig(r"C:\Users\julia\Desktop\Dissertation\avg_max_map.png", dpi=150, bbox_inches='tight')
+    plt.show(block=True)
+    print("Plot saved and displayed")
 
 
-
-#testing block 
+#testing block and uploading and testing the new nc datsets 
 if __name__ == "__main__":
     filepath     = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
-    results_path = r"C:\Users\julia\Desktop\Dissertation\bloom_calculations.nc"
+    results_path = r"C:\Users\julia\Desktop\Dissertation\bloom_results.nc"
 
     # --- run this block ONCE to calculate and save the results ---
     # after saving the results, comment this block out so you don't have to rerun it
@@ -234,6 +307,11 @@ if __name__ == "__main__":
     # save_results_to_file(std_grid, annual_avg, lat, lon, results_path)
 
     #plotting functions and change the file path to the results path in order to just run on the new saved file data 
-    # annual_data = nc.Dataset(results_path)
+    std_grid, annual_avg, lat, lon = load_results_from_file(results_path)
+
+    # plot
+    plot_avg_distribution(annual_avg)
+    map_stdev_grid(std_grid, lat, lon)
+    map_max_avg(lat, lon, annual_avg)
 
    
