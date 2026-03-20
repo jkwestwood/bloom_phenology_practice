@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #calculations
-
 def calculate_std_annual_maximum(chla_data, years):
     """
     Calculates the standard deviation of the annual maximum chlorophyll-a 
@@ -97,72 +96,83 @@ def avg_annual_max(chla_data, years):
 
     return annual_avg
 
-#Maps
-
-# def map_stdev_grid(std_grid, lat, lon):
+def save_results_to_file(std_grid, annual_avg, lat, lon, filepath_out):
     """
-    Plots the standard deviation of the annual maximum chlorophyll-a
-    concentration for each grid cell on a map.
+    Saves the standard deviation and annual average maximum chla grids to a netCDF file
+    so they can be loaded later without rerunning the full calculation.
 
     Parameters:
-    std_grid  : 2D array of standard deviation values (n_lat, n_lon)
-    lat       : 1D array of latitude values
-    lon       : 1D array of longitude values
+    std_grid    : 2D array of standard deviation values (n_lat, n_lon)
+    annual_avg  : 2D array of annual average maximum values (n_lat, n_lon)
+    lat         : 1D array of latitude values
+    lon         : 1D array of longitude values
+    filepath_out: path to save the output file e.g. "results.nc"
     """
 
-    # create a meshgrid so every grid cell has a lat and lon coordinate
-    lon_grid, lat_grid = np.meshgrid(lon, lat)
+    new_nc = nc.Dataset(filepath_out, 'w')
 
-    # set up the map with a standard plate carree projection
-    fig, ax = plt.subplots(figsize=(12, 8),
-                           subplot_kw={'projection': ccrs.PlateCarree()})
+    # create dimensions
+    new_nc.createDimension('latitude',  len(lat))
+    new_nc.createDimension('longitude', len(lon))
 
-    # add coastlines and land features
-    ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
-    ax.add_feature(cfeature.LAND, facecolor='lightgrey')
-    ax.add_feature(cfeature.BORDERS, linewidth=0.5)
-    ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
+    # create and fill variables
+    new_lat       = new_nc.createVariable('latitude',   'f4', ('latitude',))
+    new_lon       = new_nc.createVariable('longitude',  'f4', ('longitude',))
+    new_std       = new_nc.createVariable('std_grid',   'f4', ('latitude', 'longitude'), fill_value=np.nan)
+    new_avg       = new_nc.createVariable('annual_avg', 'f4', ('latitude', 'longitude'), fill_value=np.nan)
 
-    # plot the standard deviation grid on the map
-    plot = ax.pcolormesh(lon_grid, lat_grid, std_grid,
-                         cmap='coolwarm',
-                         transform=ccrs.PlateCarree())
+    new_lat[:]    = lat
+    new_lon[:]    = lon
+    new_std[:]    = std_grid
+    new_avg[:]    = annual_avg
 
-    # add a colourbar
-    cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
-    cbar.set_label('Standard Deviation of Annual Maximum Chla (mg/m³)', fontsize=11)
-
-    ax.set_title('Standard Deviation of Annual Maximum Chlorophyll-a\nAcross All Grid Cells',
-                 fontsize=13)
-    plt.tight_layout()
-    plt.savefig(r"C:\Users\julia\Desktop\Dissertation\stdev_map.png", dpi=150, bbox_inches='tight')  # save to file
-    plt.show(block=True)
-    print("Plot saved and displayed")
+    new_nc.close()
+    print(f"Results saved to {filepath_out}")
 
 
-def map_max_avg(lat, lon, data): 
-    '''
-    Plots the maximum annual average chlorophyll-a
-    concentration for each grid cell on a map.
+def load_results_from_file(filepath_in):
+    """
+    Loads the standard deviation and annual average maximum chla grids
+    from a previously saved netCDF file.
 
     Parameters:
-    std_grid  : 2D array of annual avg (n_lat, n_lon)
-    lat       : 1D array of latitude values
-    lon       : 1D array of longitude values '''
+    filepath_in : path to the saved results file
+
+    Returns:
+    std_grid   : 2D array of standard deviation values (n_lat, n_lon)
+    annual_avg : 2D array of annual average maximum values (n_lat, n_lon)
+    lat        : 1D array of latitude values
+    lon        : 1D array of longitude values
+    """
+
+    results = nc.Dataset(filepath_in, 'r')
+
+    lat        = results.variables['latitude'][:]
+    lon        = results.variables['longitude'][:]
+    std_grid   = results.variables['std_grid'][:]
+    annual_avg = results.variables['annual_avg'][:]
+
+    results.close()
+
+    print(f"Loaded results from {filepath_in}")
+    print(f"std_grid shape   : {std_grid.shape}")
+    print(f"annual_avg shape : {annual_avg.shape}")
+
+    return std_grid, annual_avg, lat, lon
 
 
+#testing block 
 if __name__ == "__main__":
-    filepath  = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
-    chla_data = nc.Dataset(filepath)
+    filepath     = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
+    results_path = r"C:\Users\julia\Desktop\Dissertation\bloom_results.nc"
 
-    lat = chla_data.variables['latitude'][:]
-    lon = chla_data.variables['longitude'][:]
-
-    years = list(range(1999, 2019))
-
-    print("\nRunning full average calculation across all years...")
-    annual_avg = avg_annual_max(chla_data, years)  # save the result to a variable
-
+    # --- run this block ONCE to calculate and save the results ---
+    # after saving the results, comment this block out so you don't have to rerun it
+    chla_data  = nc.Dataset(filepath)
+    lat        = chla_data.variables['latitude'][:]
+    lon        = chla_data.variables['longitude'][:]
+    years      = list(range(1999, 2019))
+    std_grid   = calculate_std_annual_maximum(chla_data, years)
+    annual_avg = avg_annual_max(chla_data, years)
     chla_data.close()
-
-    #map_max_avg(lat, lon, annual_avg)  # pass it to the map function
+    save_results_to_file(std_grid, annual_avg, lat, lon, results_path)
