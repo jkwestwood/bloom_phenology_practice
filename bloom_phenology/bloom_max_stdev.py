@@ -96,7 +96,95 @@ def avg_annual_max(chla_data, years):
 
     return annual_avg
 
-def save_results_to_file(std_grid, annual_avg, lat, lon, filepath_out):
+def avg_annual_day(chla_data, years): 
+    '''Calculate the average of the annual maximum of all the grid cells '''
+    lat = chla_data.variables['latitude'][:]
+    lon = chla_data.variables['longitude'][:]
+
+    # create a 3D array to store the annual maximum chla for each year and grid cell
+    all_years_max = np.full((len(years), len(lat), len(lon)), np.nan)
+
+    for year_idx, year in enumerate(years):
+        # use existing function 'find_chla_maximum' to get the bloom max chla for a given year
+        bloom_max_dates, bloom_max_chla = find_chla_maximum(chla_data, year)
+
+        #create a nested loop for each day in the year 
+        for i in range(len(lat)): 
+            for j in range(len(lat)): 
+                date = bloom_max_dates[i,j]
+
+                if date is not None: 
+                    all_years_max[year_idx, i, j] = date.timetuple().tm_yday
+
+       
+        print(f"Loaded year {year}")
+
+    # count how many years have a valid (non-NaN) value for each grid cell
+    valid_count = np.sum(~np.isnan(all_years_max), axis=0)
+
+    # calculate stdev but suppress the warning since we are handling it ourselves
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        avg_day = np.average(all_years_max, axis=0)
+
+    # set cells with fewer than 2 valid years to NaN, because not enough strong data values
+    avg_day[valid_count < 2] = np.nan
+
+    # print a summary to check the values look sensible
+    print(f"Avg Day shape       : {avg_day.shape}")
+    print(f"Min Annual Day value        : {np.nanmin(avg_day):.4f}")
+    print(f"Max Day of Avg value        : {np.nanmax(avg_day):.4f}")
+    print(f"Number of NaN cells  : {np.sum(np.isnan(avg_day))}")
+    print(f"Number of valid cells: {np.sum(~np.isnan(avg_day))}")
+
+    return avg_day
+
+def stdev_day(chla_data, years): 
+     '''Calculate the average of the annual maximum of all the grid cells '''
+     lat = chla_data.variables['latitude'][:]
+     lon = chla_data.variables['longitude'][:]
+
+    # create a 3D array to store the annual maximum chla for each year and grid cell
+     all_years_max = np.full((len(years), len(lat), len(lon)), np.nan)
+
+     for year_idx, year in enumerate(years):
+        # use existing function 'find_chla_maximum' to get the bloom max chla for a given year
+        bloom_max_dates, bloom_max_chla = find_chla_maximum(chla_data, year)
+
+        #create a nested loop for each day in the year 
+        for i in range(len(lat)): 
+            for j in range(len(lat)): 
+                date = bloom_max_dates[i,j]
+
+                if date is not None: 
+                    all_years_max[year_idx, i, j] = date.timetuple().tm_yday
+
+       
+        print(f"Loaded year {year}")
+
+    # count how many years have a valid (non-NaN) value for each grid cell
+     valid_count = np.sum(~np.isnan(all_years_max), axis=0)
+
+    # calculate stdev but suppress the warning since we are handling it ourselves
+     with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        avg_stdev_day = np.nanstd(all_years_max, axis=0)
+
+    # set cells with fewer than 2 valid years to NaN, because not enough strong data values
+     avg_stdev_day[valid_count < 2] = np.nan
+
+    # print a summary to check the values look sensible
+     print(f"Avg Day shape       : {avg_stdev_day.shape}")
+     print(f"Min Annual Day value        : {np.nanmin(avg_stdev_day):.4f}")
+     print(f"Max Day of Avg value        : {np.nanmax(avg_stdev_day):.4f}")
+     print(f"Number of NaN cells  : {np.sum(np.isnan(avg_stdev_day))}")
+     print(f"Number of valid cells: {np.sum(~np.isnan(avg_stdev_day))}")
+
+     return avg_stdev_day
+
+
+
+def save_results_to_file(std_grid, annual_avg, lat, lon, filepath_out, avg_day):
     """
     Saves the standard deviation and annual average maximum chla grids to a netCDF file
     so they can be loaded later without rerunning the full calculation.
@@ -120,11 +208,13 @@ def save_results_to_file(std_grid, annual_avg, lat, lon, filepath_out):
     new_lon       = new_nc.createVariable('longitude',  'f4', ('longitude',))
     new_std       = new_nc.createVariable('std_grid',   'f4', ('latitude', 'longitude'), fill_value=np.nan)
     new_avg       = new_nc.createVariable('annual_avg', 'f4', ('latitude', 'longitude'), fill_value=np.nan)
+    new_avg_day   = new_nc.createVariable('avg_day',    'f4', ('latitude', 'longitude'), fill_value=np.nan )
 
-    new_lat[:]    = lat
-    new_lon[:]    = lon
-    new_std[:]    = std_grid
-    new_avg[:]    = annual_avg
+    new_lat[:]       = lat
+    new_lon[:]       = lon
+    new_std[:]       = std_grid
+    new_avg[:]       = annual_avg
+    new_avg_day[:]   = avg_day
 
     new_nc.close()
     print(f"Results saved to {filepath_out}")
@@ -295,23 +385,27 @@ if __name__ == "__main__":
     filepath     = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
     results_path = r"C:\Users\julia\Desktop\Dissertation\bloom_results.nc"
 
+    
     # --- run this block ONCE to calculate and save the results ---
-    # after saving the results, comment this block out so you don't have to rerun it
-    # chla_data  = nc.Dataset(filepath)
-    # # lat        = chla_data.variables['latitude'][:]
-    # # lon        = chla_data.variables['longitude'][:]
-    # years      = list(range(1999, 2019))
-    # # std_grid   = calculate_std_annual_maximum(chla_data, years)
-    # annual_avg = avg_annual_max(chla_data, years)
-    # chla_data.close()
-    # save_results_to_file(std_grid, annual_avg, lat, lon, results_path)
+    #after saving the results, comment this block out so you don't have to rerun it
+    chla_data   = nc.Dataset(filepath)
+    lat         = chla_data.variables['latitude'][:]
+    lon         = chla_data.variables['longitude'][:]
+    years       = list(range(1999, 2019))
+    std_grid    = calculate_std_annual_maximum(chla_data, years)
+    annual_avg  = avg_annual_max(chla_data, years)
+    average_day = avg_annual_day(chla_data, years)
+    std_day     = stdev_day(chla_data, years)
+    chla_data.close()
+    save_results_to_file(std_grid, annual_avg, lat, lon, results_path)
+
 
     #plotting functions and change the file path to the results path in order to just run on the new saved file data 
-    std_grid, annual_avg, lat, lon = load_results_from_file(results_path)
+    # std_grid, annual_avg, lat, lon = load_results_from_file(results_path)
 
-    # plot
-    plot_avg_distribution(annual_avg)
-    map_stdev_grid(std_grid, lat, lon)
-    map_max_avg(lat, lon, annual_avg)
+    # # plot
+    # plot_avg_distribution(annual_avg)
+    # map_stdev_grid(std_grid, lat, lon)
+    # map_max_avg(lat, lon, annual_avg)
 
    
