@@ -379,6 +379,75 @@ def map_max_avg(lat, lon, data):
     plt.show(block=True)
     print("Plot saved and displayed")
 
+def map_day_avg(lat, lon, avg_day): 
+    '''
+    Plots the mean annual day for maximum chlorophyll-a
+    concentration for each grid cell on a map.
+
+    Parameters:
+    lat  : 1D array of latitude values
+    lon  : 1D array of longitude values
+    data : 2D array of annual average values (n_lat, n_lon)
+    '''
+
+    lon_grid, lat_grid = np.meshgrid(lon, lat)
+
+    fig, ax = plt.subplots(figsize=(12, 8),
+                           subplot_kw={'projection': ccrs.PlateCarree()})
+
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+    ax.add_feature(cfeature.LAND, facecolor='lightgrey')
+    ax.add_feature(cfeature.BORDERS, linewidth=0.5)
+    ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
+
+    plot = ax.pcolormesh(lon_grid, lat_grid, avg_day,
+                         cmap='coolwarm',
+                         transform=ccrs.PlateCarree())
+
+    cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
+    cbar.set_label('Mean Annual Maximum Chla (mg/m³)', fontsize=11)
+
+    ax.set_title('Mean Day of Chl-a Bloom', fontsize=13)
+
+    plt.tight_layout()
+    plt.savefig(r"C:\Users\julia\Desktop\Dissertation\avg_day_map.png", dpi=150, bbox_inches='tight')
+    plt.show(block=True)
+    print("Plot saved and displayed")
+
+def map_day_stdev(lat, lon, std_day): 
+     '''
+    Plots the mean annual day for maximum chlorophyll-a
+    concentration for each grid cell on a map.
+
+    Parameters:
+    lat  : 1D array of latitude values
+    lon  : 1D array of longitude values
+    data : 2D array of annual average values (n_lat, n_lon)
+    '''
+
+     lon_grid, lat_grid = np.meshgrid(lon, lat)
+
+     fig, ax = plt.subplots(figsize=(12, 8),
+                           subplot_kw={'projection': ccrs.PlateCarree()})
+
+     ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+     ax.add_feature(cfeature.LAND, facecolor='lightgrey')
+     ax.add_feature(cfeature.BORDERS, linewidth=0.5)
+     ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
+
+     plot = ax.pcolormesh(lon_grid, lat_grid, std_day,
+                         cmap='coolwarm',
+                         transform=ccrs.PlateCarree())
+
+     cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
+     cbar.set_label('Standard Deviation of Bloom Day', fontsize=11)
+
+     ax.set_title('Standard Deviation of Day of Maximum Chlorophyll-a Across All Grid Cells', fontsize=13)
+
+     plt.tight_layout()
+     plt.savefig(r"C:\Users\julia\Desktop\Dissertation\stdev_day_map.png", dpi=150, bbox_inches='tight')
+     plt.show(block=True)
+     print("Plot saved and displayed")
 
 #testing block and uploading and testing the new nc datsets 
 if __name__ == "__main__":
@@ -394,14 +463,14 @@ if __name__ == "__main__":
     years       = list(range(1999, 2019))
     std_grid    = calculate_std_annual_maximum(chla_data, years)
     annual_avg  = avg_annual_max(chla_data, years)
-    average_day = avg_annual_day(chla_data, years)
+    avg_day = avg_annual_day(chla_data, years)
     std_day     = stdev_day(chla_data, years)
     chla_data.close()
     save_results_to_file(std_grid, annual_avg, lat, lon, results_path)
 
 
     #plotting functions and change the file path to the results path in order to just run on the new saved file data 
-    # std_grid, annual_avg, lat, lon = load_results_from_file(results_path)
+    # avg_day, std_day, std_grid, annual_avg, lat, lon = load_results_from_file(results_path)
 
     # # plot
     # plot_avg_distribution(annual_avg)
