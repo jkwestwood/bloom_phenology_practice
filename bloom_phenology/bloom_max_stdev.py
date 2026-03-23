@@ -459,8 +459,8 @@ if __name__ == "__main__":
     filepath     = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
     results_path = r"C:\Users\julia\Desktop\Dissertation\bloom_results.nc"
 
-    # --- run this block ONCE to calculate and save the results ---
-    #after saving the results, comment this block out so you don't have to rerun it
+    # # --- run this block ONCE to calculate and save the results ---
+    # #after saving the results, comment this block out so you don't have to rerun it
     # chla_data   = nc.Dataset(filepath)
     # lat         = chla_data.variables['latitude'][:]
     # lon         = chla_data.variables['longitude'][:]
@@ -473,16 +473,13 @@ if __name__ == "__main__":
     # save_results_to_file(std_grid, annual_avg, avg_day, std_day, lat, lon, results_path)
 
 
-    #plotting functions and change the file path to the results path in order to just run on the new saved file data 
-    #keep the order of the return or this will mess up the data 
+    # #plotting functions and change the file path to the results path in order to just run on the new saved file data 
+    # #keep the order of the return or this will mess up the data 
     std_grid, annual_avg, avg_day, std_day, lat, lon = load_results_from_file(results_path)
 
     # plot
-    plot_avg_distribution(annual_avg)
+    #plot_avg_distribution(avg_day)
     map_stdev_grid(std_grid, lat, lon)
     map_max_avg(lat, lon, annual_avg)
     map_day_avg(lat, lon, avg_day)
     map_day_stdev(lat, lon, std_day)
-
-
-   
