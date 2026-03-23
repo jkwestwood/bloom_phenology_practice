@@ -320,6 +320,18 @@ def map_stdev_grid(std_grid, lat, lon):
     lon       : 1D array of longitude values
     """
 
+    # find the lat and lon of the maximum standard deviation value
+    max_idx       = np.nanargmax(std_grid)              # index of max value in flattened array
+    max_lat_idx, max_lon_idx = np.unravel_index(max_idx, std_grid.shape)  # convert to 2D index
+    max_lat       = lat[max_lat_idx]
+    max_lon       = lon[max_lon_idx]
+    max_value     = std_grid[max_lat_idx, max_lon_idx]
+
+    print(f"Max std value        : {max_value:.4f}")
+    print(f"Located at latitude  : {max_lat:.4f}")
+    print(f"Located at longitude : {max_lon:.4f}")
+
+
     # create a meshgrid so every grid cell has a lat and lon coordinate
     lon_grid, lat_grid = np.meshgrid(lon, lat)
 
@@ -360,6 +372,17 @@ def map_max_avg(lat, lon, data):
     data : 2D array of annual average values (n_lat, n_lon)
     '''
 
+    # find the lat and lon of the maximum standard deviation value
+    max_idx       = np.nanargmax(annual_avg)              # index of max value in flattened array
+    max_lat_idx, max_lon_idx = np.unravel_index(max_idx, annual_avg.shape)  # convert to 2D index
+    max_lat       = lat[max_lat_idx]
+    max_lon       = lon[max_lon_idx]
+    max_value     = annual_avg[max_lat_idx, max_lon_idx]
+
+    print(f"Max std value        : {max_value:.4f}")
+    print(f"Located at latitude  : {max_lat:.4f}")
+    print(f"Located at longitude : {max_lon:.4f}")
+
     lon_grid, lat_grid = np.meshgrid(lon, lat)
 
     fig, ax = plt.subplots(figsize=(12, 8),
@@ -394,6 +417,17 @@ def map_day_avg(lat, lon, avg_day):
     lon  : 1D array of longitude values
     data : 2D array of annual average values (n_lat, n_lon)
     '''
+     # find the lat and lon of the maximum standard deviation value
+    max_idx       = np.nanargmax(avg_day)              # index of max value in flattened array
+    max_lat_idx, max_lon_idx = np.unravel_index(max_idx, avg_day.shape)  # convert to 2D index
+    max_lat       = lat[max_lat_idx]
+    max_lon       = lon[max_lon_idx]
+    max_value     = avg_day[max_lat_idx, max_lon_idx]
+
+    print(f"Max std value        : {max_value:.4f}")
+    print(f"Located at latitude  : {max_lat:.4f}")
+    print(f"Located at longitude : {max_lon:.4f}")
+
 
     lon_grid, lat_grid = np.meshgrid(lon, lat)
 
@@ -429,6 +463,16 @@ def map_day_stdev(lat, lon, std_day):
     lon  : 1D array of longitude values
     data : 2D array of annual average values (n_lat, n_lon)
     '''
+     # find the lat and lon of the maximum standard deviation value
+     max_idx       = np.nanargmax(std_day)              # index of max value in flattened array
+     max_lat_idx, max_lon_idx = np.unravel_index(max_idx, std_day.shape)  # convert to 2D index
+     max_lat       = lat[max_lat_idx]
+     max_lon       = lon[max_lon_idx]
+     max_value     = std_day[max_lat_idx, max_lon_idx]
+
+     print(f"Max std value        : {max_value:.4f}")
+     print(f"Located at latitude  : {max_lat:.4f}")
+     print(f"Located at longitude : {max_lon:.4f}")     
 
      lon_grid, lat_grid = np.meshgrid(lon, lat)
 
