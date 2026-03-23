@@ -110,7 +110,7 @@ def avg_annual_day(chla_data, years):
 
         #create a nested loop for each day in the year 
         for i in range(len(lat)): 
-            for j in range(len(lat)): 
+            for j in range(len(lon)): 
                 date = bloom_max_dates[i,j]
 
                 if date is not None: 
@@ -153,7 +153,7 @@ def stdev_day(chla_data, years):
 
         #create a nested loop for each day in the year 
         for i in range(len(lat)): 
-            for j in range(len(lat)): 
+            for j in range(len(lon)): 
                 date = bloom_max_dates[i,j]
 
                 if date is not None: 
@@ -184,7 +184,7 @@ def stdev_day(chla_data, years):
 
 
 
-def save_results_to_file(std_grid, annual_avg, lat, lon, filepath_out, avg_day):
+def save_results_to_file(std_grid, annual_avg, avg_day, std_day, lat, lon, filepath_out):
     """
     Saves the standard deviation and annual average maximum chla grids to a netCDF file
     so they can be loaded later without rerunning the full calculation.
@@ -209,12 +209,15 @@ def save_results_to_file(std_grid, annual_avg, lat, lon, filepath_out, avg_day):
     new_std       = new_nc.createVariable('std_grid',   'f4', ('latitude', 'longitude'), fill_value=np.nan)
     new_avg       = new_nc.createVariable('annual_avg', 'f4', ('latitude', 'longitude'), fill_value=np.nan)
     new_avg_day   = new_nc.createVariable('avg_day',    'f4', ('latitude', 'longitude'), fill_value=np.nan )
-
+    new_std_day   = new_nc.createVariable('std_day',    'f4', ('latitude', 'longitude'), fill_value=np.nan  )
+    
+    
     new_lat[:]       = lat
     new_lon[:]       = lon
     new_std[:]       = std_grid
     new_avg[:]       = annual_avg
     new_avg_day[:]   = avg_day
+    new_std_day[:]   = std_day
 
     new_nc.close()
     print(f"Results saved to {filepath_out}")
@@ -241,14 +244,16 @@ def load_results_from_file(filepath_in):
     lon        = results.variables['longitude'][:]
     std_grid   = results.variables['std_grid'][:]
     annual_avg = results.variables['annual_avg'][:]
-
+    avg_day    = results.variables['avg_day'][:]
+    std_day    = results.variables['std_day'][:]
     results.close()
 
     print(f"Loaded results from {filepath_in}")
     print(f"std_grid shape   : {std_grid.shape}")
     print(f"annual_avg shape : {annual_avg.shape}")
 
-    return std_grid, annual_avg, lat, lon
+
+    return std_grid, annual_avg, avg_day, std_day, lat, lon
 
 # Add plots and maps for the calculations from above 
 #distribution plot for avg chla-maximum
@@ -454,27 +459,30 @@ if __name__ == "__main__":
     filepath     = r"C:\Users\julia\Desktop\Dissertation\chl_8day_cleaned.nc"
     results_path = r"C:\Users\julia\Desktop\Dissertation\bloom_results.nc"
 
-    
     # --- run this block ONCE to calculate and save the results ---
     #after saving the results, comment this block out so you don't have to rerun it
-    chla_data   = nc.Dataset(filepath)
-    lat         = chla_data.variables['latitude'][:]
-    lon         = chla_data.variables['longitude'][:]
-    years       = list(range(1999, 2019))
-    std_grid    = calculate_std_annual_maximum(chla_data, years)
-    annual_avg  = avg_annual_max(chla_data, years)
-    avg_day = avg_annual_day(chla_data, years)
-    std_day     = stdev_day(chla_data, years)
-    chla_data.close()
-    save_results_to_file(std_grid, annual_avg, lat, lon, results_path)
+    # chla_data   = nc.Dataset(filepath)
+    # lat         = chla_data.variables['latitude'][:]
+    # lon         = chla_data.variables['longitude'][:]
+    # years       = list(range(1999, 2019))
+    # std_grid    = calculate_std_annual_maximum(chla_data, years)
+    # annual_avg  = avg_annual_max(chla_data, years)
+    # avg_day     = avg_annual_day(chla_data, years)
+    # std_day     = stdev_day(chla_data, years)
+    # chla_data.close()
+    # save_results_to_file(std_grid, annual_avg, avg_day, std_day, lat, lon, results_path)
 
 
     #plotting functions and change the file path to the results path in order to just run on the new saved file data 
-    # avg_day, std_day, std_grid, annual_avg, lat, lon = load_results_from_file(results_path)
+    #keep the order of the return or this will mess up the data 
+    std_grid, annual_avg, avg_day, std_day, lat, lon = load_results_from_file(results_path)
 
-    # # plot
-    # plot_avg_distribution(annual_avg)
-    # map_stdev_grid(std_grid, lat, lon)
-    # map_max_avg(lat, lon, annual_avg)
+    # plot
+    plot_avg_distribution(annual_avg)
+    map_stdev_grid(std_grid, lat, lon)
+    map_max_avg(lat, lon, annual_avg)
+    map_day_avg(lat, lon, avg_day)
+    map_day_stdev(lat, lon, std_day)
+
 
    
