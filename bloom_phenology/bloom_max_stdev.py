@@ -327,6 +327,7 @@ def map_stdev_grid(std_grid, lat, lon):
     max_lon       = lon[max_lon_idx]
     max_value     = std_grid[max_lat_idx, max_lon_idx]
 
+    print (max_lat_idx, max_lon_idx)
     print(f"Max std value        : {max_value:.4f}")
     print(f"Located at latitude  : {max_lat:.4f}")
     print(f"Located at longitude : {max_lon:.4f}")
@@ -379,6 +380,7 @@ def map_max_avg(lat, lon, data):
     max_lon       = lon[max_lon_idx]
     max_value     = annual_avg[max_lat_idx, max_lon_idx]
 
+    print (max_lat_idx, max_lon_idx)
     print(f"Max std value        : {max_value:.4f}")
     print(f"Located at latitude  : {max_lat:.4f}")
     print(f"Located at longitude : {max_lon:.4f}")
@@ -470,6 +472,7 @@ def map_day_stdev(lat, lon, std_day):
      max_lon       = lon[max_lon_idx]
      max_value     = std_day[max_lat_idx, max_lon_idx]
 
+      
      print(f"Max std value        : {max_value:.4f}")
      print(f"Located at latitude  : {max_lat:.4f}")
      print(f"Located at longitude : {max_lon:.4f}")     
@@ -525,5 +528,5 @@ if __name__ == "__main__":
     #plot_avg_distribution(avg_day)
     map_stdev_grid(std_grid, lat, lon)
     map_max_avg(lat, lon, annual_avg)
-    map_day_avg(lat, lon, avg_day)
-    map_day_stdev(lat, lon, std_day)
+    # map_day_avg(lat, lon, avg_day)
+    # map_day_stdev(lat, lon, std_day)
