@@ -8,6 +8,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 import numpy as np
+import cmocean #color bar scales common in oceanography 
 
 #calculations
 def calculate_std_annual_maximum(chla_data, years):
@@ -51,11 +52,11 @@ def calculate_std_annual_maximum(chla_data, years):
     std_grid[valid_count < 2] = np.nan
 
     # print a summary to check the values look sensible
-    print(f"std_grid shape       : {std_grid.shape}")
-    print(f"Min std value        : {np.nanmin(std_grid):.4f}")
-    print(f"Max std value        : {np.nanmax(std_grid):.4f}")
-    print(f"Number of NaN cells  : {np.sum(np.isnan(std_grid))}")
-    print(f"Number of valid cells: {np.sum(~np.isnan(std_grid))}")
+    # print(f"std_grid shape       : {std_grid.shape}")
+    # print(f"Min std value        : {np.nanmin(std_grid):.4f}")
+    # print(f"Max std value        : {np.nanmax(std_grid):.4f}")
+    # print(f"Number of NaN cells  : {np.sum(np.isnan(std_grid))}")
+    # print(f"Number of valid cells: {np.sum(~np.isnan(std_grid))}")
 
     return std_grid
 
@@ -87,12 +88,12 @@ def avg_annual_max(chla_data, years):
     # set cells with fewer than 2 valid years to NaN, because not enough strong data values
     annual_avg[valid_count < 2] = np.nan
 
-    # print a summary to check the values look sensible
-    print(f"annual_avg shape       : {annual_avg.shape}")
-    print(f"Min annual_avg value        : {np.nanmin(annual_avg):.4f}")
-    print(f"Max annual_avg value        : {np.nanmax(annual_avg):.4f}")
-    print(f"Number of NaN cells  : {np.sum(np.isnan(annual_avg))}")
-    print(f"Number of valid cells: {np.sum(~np.isnan(annual_avg))}")
+    # # print a summary to check the values look sensible
+    # print(f"annual_avg shape       : {annual_avg.shape}")
+    # print(f"Min annual_avg value        : {np.nanmin(annual_avg):.4f}")
+    # print(f"Max annual_avg value        : {np.nanmax(annual_avg):.4f}")
+    # print(f"Number of NaN cells  : {np.sum(np.isnan(annual_avg))}")
+    # print(f"Number of valid cells: {np.sum(~np.isnan(annual_avg))}")
 
     return annual_avg
 
@@ -131,11 +132,11 @@ def avg_annual_day(chla_data, years):
     avg_day[valid_count < 2] = np.nan
 
     # print a summary to check the values look sensible
-    print(f"Avg Day shape       : {avg_day.shape}")
-    print(f"Min Annual Day value        : {np.nanmin(avg_day):.4f}")
-    print(f"Max Day of Avg value        : {np.nanmax(avg_day):.4f}")
-    print(f"Number of NaN cells  : {np.sum(np.isnan(avg_day))}")
-    print(f"Number of valid cells: {np.sum(~np.isnan(avg_day))}")
+    # print(f"Avg Day shape       : {avg_day.shape}")
+    # print(f"Min Annual Day value        : {np.nanmin(avg_day):.4f}")
+    # print(f"Max Day of Avg value        : {np.nanmax(avg_day):.4f}")
+    # print(f"Number of NaN cells  : {np.sum(np.isnan(avg_day))}")
+    # print(f"Number of valid cells: {np.sum(~np.isnan(avg_day))}")
 
     return avg_day
 
@@ -174,15 +175,13 @@ def stdev_day(chla_data, years):
      avg_stdev_day[valid_count < 2] = np.nan
 
     # print a summary to check the values look sensible
-     print(f"Avg Day shape       : {avg_stdev_day.shape}")
-     print(f"Min Annual Day value        : {np.nanmin(avg_stdev_day):.4f}")
-     print(f"Max Day of Avg value        : {np.nanmax(avg_stdev_day):.4f}")
-     print(f"Number of NaN cells  : {np.sum(np.isnan(avg_stdev_day))}")
-     print(f"Number of valid cells: {np.sum(~np.isnan(avg_stdev_day))}")
+    #  print(f"Avg Day shape       : {avg_stdev_day.shape}")
+    #  print(f"Min Annual Day value        : {np.nanmin(avg_stdev_day):.4f}")
+    #  print(f"Max Day of Avg value        : {np.nanmax(avg_stdev_day):.4f}")
+    #  print(f"Number of NaN cells  : {np.sum(np.isnan(avg_stdev_day))}")
+    #  print(f"Number of valid cells: {np.sum(~np.isnan(avg_stdev_day))}")
 
      return avg_stdev_day
-
-
 
 def save_results_to_file(std_grid, annual_avg, avg_day, std_day, lat, lon, filepath_out):
     """
@@ -221,7 +220,6 @@ def save_results_to_file(std_grid, annual_avg, avg_day, std_day, lat, lon, filep
 
     new_nc.close()
     print(f"Results saved to {filepath_out}")
-
 
 def load_results_from_file(filepath_in):
     """
@@ -348,7 +346,7 @@ def map_stdev_grid(std_grid, lat, lon):
 
     # plot the standard deviation grid on the map
     plot = ax.pcolormesh(lon_grid, lat_grid, std_grid,
-                         cmap='coolwarm',
+                         cmap= cmocean.cm.algae, #added the cmocean color 
                          transform=ccrs.PlateCarree())
 
     # add a colourbar
@@ -396,7 +394,7 @@ def map_max_avg(lat, lon, data):
     ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
 
     plot = ax.pcolormesh(lon_grid, lat_grid, data,
-                         cmap='coolwarm',
+                         cmap= cmocean.cm.ice, #added the cmocean color 
                          transform=ccrs.PlateCarree())
 
     cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
@@ -442,7 +440,7 @@ def map_day_avg(lat, lon, avg_day):
     ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
 
     plot = ax.pcolormesh(lon_grid, lat_grid, avg_day,
-                         cmap='coolwarm',
+                         cmap= cmocean.cm.ice, #added the cmocean color 
                          transform=ccrs.PlateCarree())
 
     cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
@@ -488,7 +486,7 @@ def map_day_stdev(lat, lon, std_day):
      ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
 
      plot = ax.pcolormesh(lon_grid, lat_grid, std_day,
-                         cmap='coolwarm',
+                         cmap= cmocean.cm.algae, #added the cmocean color 
                          transform=ccrs.PlateCarree())
 
      cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
