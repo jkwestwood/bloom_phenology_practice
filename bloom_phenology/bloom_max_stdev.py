@@ -446,6 +446,14 @@ def map_day_avg(lat, lon, avg_day):
     cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
     cbar.set_label('Mean Annual Maximum Chla (mg/m³)', fontsize=11)
 
+    # Day-of-year boundaries for the start of each month (non-leap year)
+    month_starts = [ 60, 91, 121, 152, 182, 213, 244, 274]
+    month_names  = [ 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct']
+
+    cbar.set_ticks(month_starts)
+    cbar.set_ticklabels(month_names)
+
     ax.set_title('Mean Day of Chl-a Bloom', fontsize=13)
 
     plt.tight_layout()
@@ -524,7 +532,7 @@ if __name__ == "__main__":
 
     # plot
     #plot_avg_distribution(avg_day)
-    map_stdev_grid(std_grid, lat, lon)
-    map_max_avg(lat, lon, annual_avg)
-    # map_day_avg(lat, lon, avg_day)
+    # map_stdev_grid(std_grid, lat, lon)
+    # map_max_avg(lat, lon, annual_avg)
+    map_day_avg(lat, lon, avg_day)
     # map_day_stdev(lat, lon, std_day)
