@@ -318,6 +318,8 @@ def map_stdev_grid(std_grid, lat, lon):
     lon       : 1D array of longitude values
     """
 
+    # Mask values above 20 mg/m³ so outliers are excluded entirely
+
     # find the lat and lon of the maximum standard deviation value
     max_idx       = np.nanargmax(std_grid)              # index of max value in flattened array
     max_lat_idx, max_lon_idx = np.unravel_index(max_idx, std_grid.shape)  # convert to 2D index
@@ -347,6 +349,7 @@ def map_stdev_grid(std_grid, lat, lon):
     # plot the standard deviation grid on the map
     plot = ax.pcolormesh(lon_grid, lat_grid, std_grid,
                          cmap= cmocean.cm.algae, #added the cmocean color 
+                         vmin = 0, vmax = 5, #set scale to look at variation
                          transform=ccrs.PlateCarree())
 
     # add a colourbar
@@ -370,6 +373,8 @@ def map_max_avg(lat, lon, data):
     lon  : 1D array of longitude values
     data : 2D array of annual average values (n_lat, n_lon)
     '''
+     # Mask values above 20 mg/m³ so outliers are excluded entirely
+    data_masked = np.where(std_grid > 15, np.nan, data)   # ← replace >20 with NaN
 
     # find the lat and lon of the maximum standard deviation value
     max_idx       = np.nanargmax(annual_avg)              # index of max value in flattened array
@@ -394,7 +399,8 @@ def map_max_avg(lat, lon, data):
     ax.gridlines(draw_labels=True, linewidth=0.5, linestyle='--', color='grey')
 
     plot = ax.pcolormesh(lon_grid, lat_grid, data,
-                         cmap= cmocean.cm.ice, #added the cmocean color 
+                         cmap= cmocean.cm.ice_r, #added the cmocean color 
+                         vmin = 0, vmax = 15, #set scale to look at variation
                          transform=ccrs.PlateCarree())
 
     cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05, shrink=0.7)
@@ -533,6 +539,6 @@ if __name__ == "__main__":
     # plot
     #plot_avg_distribution(avg_day)
     # map_stdev_grid(std_grid, lat, lon)
-    # map_max_avg(lat, lon, annual_avg)
-    map_day_avg(lat, lon, avg_day)
+    map_max_avg(lat, lon, annual_avg)
+    # map_day_avg(lat, lon, avg_day)
     # map_day_stdev(lat, lon, std_day)
