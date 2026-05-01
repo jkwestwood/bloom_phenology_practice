@@ -12,10 +12,10 @@ import gc
 #add authentication
 auth = earthaccess.login(persist=True)
 
-#summer 
+#summer August 2024
 summer_results = earthaccess.search_data(
     short_name='PACE_OCI_L4M_MOANA', 
-    temporal=('2024-09-01', '2024-09-02'),
+    temporal=('2024-08-01', '2024-08-02'),
     granule_name='*8D*'
 )
 
@@ -27,10 +27,10 @@ for res in summer_results:
 sum_fileset = earthaccess.open(summer_results)
 ds_sum = xr.open_dataset(sum_fileset[0])
 
-#spring 
+#spring April 2024
 spring_results = earthaccess.search_data(
     short_name='PACE_OCI_L4M_MOANA', 
-    temporal=('2025-03-01', '2025-03-02'),
+    temporal=('2024-04-01', '2024-04-02'),
     granule_name='*8D*'
 )
 
@@ -42,7 +42,7 @@ for res in spring_results:
 spring_fileset = earthaccess.open(spring_results)
 ds_spring = xr.open_dataset(spring_fileset[0])
 
-#Fall 
+#Fall October 2024
 fall_results = earthaccess.search_data(
     short_name='PACE_OCI_L4M_MOANA', 
     temporal=('2024-10-01', '2024-10-02'),
@@ -58,9 +58,9 @@ fall_fileset = earthaccess.open(fall_results)
 ds_fall = xr.open_dataset(fall_fileset[0])
 
 phyto_info = {
-    'prococcus_moana': {'color': 'green',   'label': 'Prochlorococcus'},
-    'syncoccus_moana': {'color': 'cyan',    'label': 'Synechococcus'},
-    'picoeuk_moana':{'color': 'magenta', 'label': 'Picoeukaryotes'}
+    'prococcus_moana': {'color': 'black','label': 'Prochlorococcus'},
+    'syncoccus_moana': {'color': 'black','label': 'Synechococcus'},
+    'picoeuk_moana':{'color': 'black', 'label': 'Picoeukaryotes'}
 }
 
 # UK bounding box — lat is descending so slice high tolow
@@ -68,7 +68,6 @@ LON_MIN, LON_MAX = -15, 10
 LAT_MIN, LAT_MAX =  45, 65
 
 #Plots for the summer dataset 
-
 ds_uk_sum = ds_sum.sel(
     lat=slice(LAT_MAX, LAT_MIN),   # 65 → 45 (descending)
     lon=slice(LON_MIN, LON_MAX)
@@ -81,7 +80,7 @@ fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
 )
-fig.suptitle('Phytoplankton around the UK – PACE MOANA (Aug–Sep 2024)',
+fig.suptitle('Phytoplankton around the UK – PACE MOANA (Aug 2024)',
              fontsize=13, fontweight='bold')
 
 for ax, (var, info) in zip(axes, phyto_info.items()):
@@ -127,7 +126,7 @@ ax.plot(pico.values, pico['lat'].values, color='magenta', lw=2, label='Picoeukar
 
 ax.set_xlabel('Median cell concentration (cells mL⁻¹)', fontsize=11)
 ax.set_ylabel('Latitude (°N)', fontsize=11)
-ax.set_title('Latitudinal variation in phytoplankton\n(50–60°N, Aug–Sep 2024)', fontsize=12)
+ax.set_title('Latitudinal variation in phytoplankton\n(50–60°N, Aug 2024)', fontsize=12)
 ax.legend(fontsize=10)
 ax.grid(True, alpha=0.3)
 
@@ -142,7 +141,7 @@ fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
 )
-fig.suptitle('Phytoplankton UK (log scale) – PACE MOANA (Aug–Sep 2024)',
+fig.suptitle('Phytoplankton UK (log scale) – PACE MOANA (Aug 2024)',
              fontsize=13, fontweight='bold')
 
 for ax, (var, info) in zip(axes, phyto_info.items()):
@@ -192,7 +191,7 @@ fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
 )
-fig.suptitle('Phytoplankton around the UK – PACE MOANA (March 2025)',
+fig.suptitle('Phytoplankton around the UK – PACE MOANA (April 2024)',
              fontsize=13, fontweight='bold')
 
 for ax, (var, info) in zip(axes, phyto_info.items()):
@@ -238,7 +237,7 @@ ax.plot(pico.values, pico['lat'].values, color='magenta', lw=2, label='Picoeukar
 
 ax.set_xlabel('Median cell concentration (cells mL⁻¹)', fontsize=11)
 ax.set_ylabel('Latitude (°N)', fontsize=11)
-ax.set_title('Latitudinal variation in phytoplankton\n(50–60°N, Mar 2025)', fontsize=12)
+ax.set_title('Latitudinal variation in phytoplankton\n(50–60°N, Apr 2024)', fontsize=12)
 ax.legend(fontsize=10)
 ax.grid(True, alpha=0.3)
 
@@ -253,7 +252,7 @@ fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
 )
-fig.suptitle('Phytoplankton UK (log scale) – PACE MOANA (Mar 2025)',
+fig.suptitle('Phytoplankton UK (log scale) – PACE MOANA (Apr 2024)',
              fontsize=13, fontweight='bold')
 
 for ax, (var, info) in zip(axes, phyto_info.items()):
@@ -302,7 +301,7 @@ fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
 )
-fig.suptitle('Phytoplankton around the UK – PACE MOANA (October 2025)',
+fig.suptitle('Phytoplankton around the UK – PACE MOANA (October 2024)',
              fontsize=13, fontweight='bold')
 
 for ax, (var, info) in zip(axes, phyto_info.items()):
@@ -348,7 +347,7 @@ ax.plot(pico.values, pico['lat'].values, color='magenta', lw=2, label='Picoeukar
 
 ax.set_xlabel('Median cell concentration (cells mL⁻¹)', fontsize=11)
 ax.set_ylabel('Latitude (°N)', fontsize=11)
-ax.set_title('Latitudinal variation in phytoplankton\n(50–60°N, Oct 2025)', fontsize=12)
+ax.set_title('Latitudinal variation in phytoplankton\n(50–60°N, Oct 2024)', fontsize=12)
 ax.legend(fontsize=10)
 ax.grid(True, alpha=0.3)
 
@@ -363,7 +362,7 @@ fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
 )
-fig.suptitle('Phytoplankton UK (log scale) – PACE MOANA (October 2025)',
+fig.suptitle('Phytoplankton UK (log scale) – PACE MOANA (October 2024)',
              fontsize=13, fontweight='bold')
 
 for ax, (var, info) in zip(axes, phyto_info.items()):
