@@ -58,9 +58,9 @@ fall_fileset = earthaccess.open(fall_results)
 ds_fall = xr.open_dataset(fall_fileset[0])
 
 phyto_info = {
-    'prococcus_moana': {'color': 'black','label': 'Prochlorococcus'},
-    'syncoccus_moana': {'color': 'black','label': 'Synechococcus'},
-    'picoeuk_moana':{'color': 'black', 'label': 'Picoeukaryotes'}
+    'prococcus_moana':{'color':'black','label': 'Prochlorococcus'},
+    'syncoccus_moana':{'color':'black','label': 'Synechococcus'},
+    'picoeuk_moana':{'color':'black', 'label': 'Picoeukaryotes'}
 }
 
 # UK bounding box — lat is descending so slice high tolow
@@ -75,7 +75,7 @@ ds_uk_sum = ds_sum.sel(
 
 print(f"UK subset shape: {ds_uk_sum['syncoccus_moana'].shape}")  # sanity check
 
-#  1. UK REGIONAL MAPS 
+# 1. UK REGIONAL MAPS 
 fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
@@ -186,7 +186,7 @@ ds_uk_spring = ds_spring.sel(
 
 print(f"UK subset shape: {ds_uk_spring['syncoccus_moana'].shape}")  # sanity check
 
-#  1. UK REGIONAL MAPS 
+# 1. UK REGIONAL MAPS 
 fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
@@ -296,7 +296,7 @@ ds_uk_fall = ds_fall.sel(
 
 print(f"UK subset shape: {ds_uk_fall['syncoccus_moana'].shape}")  # sanity check
 
-#  1. UK REGIONAL MAPS 
+# 1. UK REGIONAL MAPS 
 fig, axes = plt.subplots(
     1, 3, figsize=(15, 5),
     subplot_kw={'projection': ccrs.PlateCarree()}
